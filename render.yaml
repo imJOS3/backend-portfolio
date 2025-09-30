@@ -1,10 +1,50 @@
-# filepath: render.yaml
 services:
   - type: web
     name: backend-portfolio
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn backend.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: backend.settings
+      - key: PYTHON_VERSION
+        value: 3.13.4
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: RENDER
+        value: true
+      - key: RENDER_EXTERNAL_HOSTNAME
+        fromService:
+          type: web
+          name: backend-portfolio
+          property: host
+
+databases:
+  - name: backend-db
+    plan: free
+    databaseName: backend
+    user: backend_user
+    envVars:
+      - key: DB_NAME
+        fromDatabase:
+          name: backend-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: backend-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: backend-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: backend-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: backend-db
+          property: port
