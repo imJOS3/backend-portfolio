@@ -1,10 +1,11 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-u75l5(s&-7*s1e$c#q-3fpv5_faj$%$(@gqq0!!gv+&d^6o8l%'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-u75l5(s&-7*s1e$c#q-3fpv5_faj$%$(@gqq0!!gv+&d^6o8l%')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'localhost')]
 
 # -----------------------------
 # 🔹 Apps
@@ -29,6 +30,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # debe estar al inicio
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # WhiteNoise para archivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,12 +64,25 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # -----------------------------
 # 🔹 Database (sqlite por ahora)
 # -----------------------------
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Base de datos: usa PostgreSQL en Render, SQLite local
+if os.environ.get('RENDER'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # -----------------------------
 # 🔹 Password validators (igual)
@@ -90,7 +105,10 @@ USE_TZ = True
 # -----------------------------
 # 🔹 Archivos estáticos y media
 # -----------------------------
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -100,8 +118,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # 🔹 Configuración CORS
 # -----------------------------
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # vite dev
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://josebenjumea.site",
 ]
 
 # -----------------------------

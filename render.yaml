@@ -1,0 +1,10 @@
+# filepath: render.yaml
+services:
+  - type: web
+    name: backend-portfolio
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend.settings
