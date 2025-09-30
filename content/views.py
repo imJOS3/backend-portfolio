@@ -1,16 +1,25 @@
-from rest_framework import generics
-
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import FAQ, FavoriteItem, ContactMessage
 from .serializers import FAQSerializer, FavoriteItemSerializer, ContactMessageSerializer
 
-# Lista de FAQs
-class FAQListView(generics.ListAPIView):
-    queryset = FAQ.objects.filter(published=True).order_by("order")
+# -----------------------------
+# CRUD de FAQs
+# -----------------------------
+class FAQListCreateView(generics.ListCreateAPIView):
+    queryset = FAQ.objects.all().order_by("order")
+    serializer_class = FAQSerializer
+
+class FAQRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
 
 
-# CRUD para FavoriteItem
+# -----------------------------
+# CRUD de FavoriteItem
+# -----------------------------
 class FavoriteItemListCreateView(generics.ListCreateAPIView):
     queryset = FavoriteItem.objects.all()
     serializer_class = FavoriteItemSerializer
@@ -20,17 +29,13 @@ class FavoriteItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
     serializer_class = FavoriteItemSerializer
 
 
-# Vista para crear mensajes de contacto
-from .models import ContactMessage
-from .serializers import ContactMessageSerializer
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# -----------------------------
+# CRUD de ContactMessage
+# -----------------------------
+class ContactMessageListCreateView(generics.ListCreateAPIView):
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
 
-class ContactMessageCreateView(APIView):
-    def post(self, request, format=None):
-        serializer = ContactMessageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"success": True, "message": "Mensaje enviado correctamente."}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class ContactMessageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
