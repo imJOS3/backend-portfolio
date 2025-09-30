@@ -24,7 +24,7 @@ class FavoriteItem(models.Model):
     ]
     titulo = models.CharField(max_length=200)
     tipo = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    imagen = models.ImageField(upload_to="favorite_items/")
+    imagen = models.URLField(max_length=500)
     resumen = models.CharField(max_length=300)
     descripcion = models.TextField()
     palabras_clave = models.CharField(max_length=200)
