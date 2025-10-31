@@ -130,3 +130,24 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
 }
+
+# -----------------------------
+# 🔹 Crear superusuario automáticamente (solo en Render)
+# -----------------------------
+import django
+from django.contrib.auth import get_user_model
+
+try:
+    django.setup()
+    User = get_user_model()
+
+    if os.environ.get('CREATE_SUPERUSER', 'False') == 'True':
+        username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
+        email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+        password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'admin123')
+
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(username=username, email=email, password=password)
+            print(f"✅ Superusuario '{username}' creado automáticamente.")
+except Exception as e:
+    print(f"⚠️ No se pudo crear el superusuario automáticamente: {e}")
