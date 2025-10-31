@@ -1,31 +1,18 @@
 services:
   - type: web
-    name: backend-portfolio
+    name: django-backend
     env: python
-    plan: free
     buildCommand: |
-      pip install -r requirements.txt && \
-      python manage.py makemigrations && \
-      python manage.py migrate && \
-      python manage.py collectstatic --noinput && \
+      pip install -r requirements.txt
+      python backend/manage.py makemigrations
+      python backend/manage.py migrate
+      python backend/manage.py collectstatic --noinput
       python backend/create_superuser_auto.py
-    startCommand: >
-      python manage.py migrate &&
-      python backend/create_superuser_auto.py &&
-      gunicorn backend.wsgi:application
+    startCommand: gunicorn backend.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: backend.settings
-      - key: PYTHON_VERSION
-        value: 3.13.4
-      - key: SECRET_KEY
-        generateValue: true
-      - key: DEBUG
-        value: False
-      - key: RENDER
-        value: true
-      - key: RENDER_EXTERNAL_HOSTNAME
-        fromService:
-          type: web
-          name: backend-portfolio
-          property: host
+      - key: PYTHONUNBUFFERED
+        value: "true"
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "true"
