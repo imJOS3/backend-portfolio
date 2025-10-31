@@ -3,7 +3,11 @@ services:
     name: backend-portfolio
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py migrate
+      python manage.py collectstatic --noinput
+      python manage.py createsuperuser --noinput || true
     startCommand: gunicorn backend.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
@@ -21,30 +25,3 @@ services:
           type: web
           name: backend-portfolio
           property: host
-
-databases:
-  - name: backend-db
-    plan: free
-    databaseName: backend
-    user: backend_user
-    envVars:
-      - key: DB_NAME
-        fromDatabase:
-          name: backend-db
-          property: database
-      - key: DB_USER
-        fromDatabase:
-          name: backend-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: backend-db
-          property: password
-      - key: DB_HOST
-        fromDatabase:
-          name: backend-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: backend-db
-          property: port
