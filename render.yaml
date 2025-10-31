@@ -8,7 +8,7 @@ services:
       python manage.py collectstatic --noinput
     startCommand: >
       python manage.py migrate &&
-      python create_superuser_auto.py &&
+      python backend/create_superuser_auto.py &&
       gunicorn backend.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
