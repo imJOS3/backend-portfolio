@@ -1,50 +1,32 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .models import FAQ, FavoriteItem, ContactMessage, Certificate, Project
-from .serializers import FAQSerializer, FavoriteItemSerializer, ContactMessageSerializer, CertificateSerializer, ProjectSerializer
+from .serializers import (
+    FAQSerializer, FavoriteItemSerializer,
+    ContactMessageSerializer, CertificateSerializer,
+    ProjectSerializer
+)
 
 # -----------------------------
-# CRUD de FAQs
+# ViewSets uniformados
 # -----------------------------
-class FAQListCreateView(generics.ListCreateAPIView):
+
+class FAQViewSet(viewsets.ModelViewSet):
     queryset = FAQ.objects.all().order_by("order")
     serializer_class = FAQSerializer
 
-class FAQRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = FAQ.objects.all()
-    serializer_class = FAQSerializer
 
-
-# -----------------------------
-# CRUD de FavoriteItem
-# -----------------------------
-class FavoriteItemListCreateView(generics.ListCreateAPIView):
-    queryset = FavoriteItem.objects.all()
-    serializer_class = FavoriteItemSerializer
-
-class FavoriteItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class FavoriteItemViewSet(viewsets.ModelViewSet):
     queryset = FavoriteItem.objects.all()
     serializer_class = FavoriteItemSerializer
 
 
-# -----------------------------
-# CRUD de ContactMessage
-# -----------------------------
-class ContactMessageListCreateView(generics.ListCreateAPIView):
+class ContactMessageViewSet(viewsets.ModelViewSet):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
 
-class ContactMessageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ContactMessage.objects.all()
-    serializer_class = ContactMessageSerializer
 
-# -----------------------------
-# CRUD de Certificate
-# -----------------------------
 class CertificateViewSet(viewsets.ModelViewSet):
     queryset = Certificate.objects.all()
     serializer_class = CertificateSerializer
@@ -55,11 +37,6 @@ class CertificateViewSet(viewsets.ModelViewSet):
     ordering = ['-anio', '-creado']
 
 
-class ProjectListCreateView(generics.ListCreateAPIView):
+class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all().order_by("-created_at")
-    serializer_class = ProjectSerializer
-
-
-class ProjectRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
